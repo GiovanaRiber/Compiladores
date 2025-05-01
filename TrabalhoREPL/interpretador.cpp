@@ -82,7 +82,13 @@ int calcularExpressao(const vector<Token>& tokens) {
             
             int valor = stoi(t.valor);
             switch (op) {
-                case '/': resultado /= valor; break;
+                case '/': 
+                    if (valor == 0) {
+                        cerr << "Erro: divisao por zero (" << resultado << "/0)" << endl;
+                        return 0; 
+                    }
+                    resultado /= valor;
+                break;
                 case '*': resultado *= valor; break;
                 case '-': resultado -= valor; break;
                 case '+': resultado += valor; break;
@@ -97,7 +103,13 @@ int calcularExpressao(const vector<Token>& tokens) {
 
             int valor = tabela_simbolos[t.valor];
             switch (op) {
-                case '/': resultado /= valor; break;
+                case '/': 
+                if (valor == 0) {
+                    cerr << "Erro: divisao por zero (" << resultado << "/" << t.valor << "=0)" << endl;
+                    return 0; 
+                }
+                resultado /= valor;
+                break;
                 case '*': resultado *= valor; break;
                 case '-': resultado -= valor; break;
                 case '+': resultado += valor; break;
