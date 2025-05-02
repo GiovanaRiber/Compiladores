@@ -97,7 +97,7 @@ int calcularExpressao(const vector<Token>& tokens) {
         else if (t.tipo == Var) { // caso seja uma variável
             
             if (!tabela_simbolos.count(t.valor)) {
-                cerr << "Variavel indefinida " << t.valor << endl;
+                cerr << "Variavel " << t.valor << " nao definida !" << endl;
                 exit(1);
             }
 
@@ -131,7 +131,7 @@ int main() {
     string entrada;
 
     while (true) {
-        cout << "> ";
+        cout << ">> ";
 
         if (!getline(cin, entrada)) break;
         if (entrada == ".") break; // para sair do loop
