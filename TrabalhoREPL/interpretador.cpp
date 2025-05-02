@@ -40,10 +40,8 @@ vector<Token> criarToken(const string& entrada) {
                 var += entrada[i++];
             tokens.push_back({Var, var}); 
         }
-        else if (entrada[i] == '+' || 
-                 entrada[i] == '-' || 
-                 entrada[i] == '/' || 
-                 entrada[i] == '*') { // caso operadores
+        else if (entrada[i] == '+' || entrada[i] == '-' || 
+                 entrada[i] == '/' || entrada[i] == '*') { // caso operadores
 
             tokens.push_back({Op, string(1, entrada[i++])});  
         }
@@ -85,25 +83,23 @@ float calcularExpressao(const vector<Token>& tokens) {
              
             float valor;
 
-            if (t.tipo == Num) {
-
+            if (t.tipo == Num)
                 valor = stoi(t.valor);
-            } else {
+            else {
 
                 if (!tabela_simbolos.count(t.valor)) {
                     cerr << "Variavel " << t.valor << " nao definida !" << endl;
                     exit(1);
                 }
-    
                 valor = tabela_simbolos[t.valor];
             }
 
-            if (op == '/' && valor == 0) {
+            if (op == '/' && valor == 0) { // divisão por zero
                 cerr << "Erro: divisao por zero (" << resultado << "/" << t.valor << "=0)" << endl;
                 return 0; 
             }
 
-            switch (op) {
+            switch (op) { // dependendo do operador
                 case '/': resultado /= valor; break;
                 case '*': resultado *= valor; break;
                 case '-': resultado -= valor; break;
@@ -111,7 +107,6 @@ float calcularExpressao(const vector<Token>& tokens) {
             }
         }
         else if (t.tipo == Op) { // caso seja um operador, armazena ele
-
             op = t.valor[0];
         }
     }
@@ -123,9 +118,10 @@ void atribuirVariavel(const vector<Token>& tokens) {
     string var = tokens[0].valor;
     vector<Token> expressao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
     float valor = calcularExpressao(expressao);
+
     tabela_simbolos[var] = valor; // adiciona na tabela
 
-    if (valor == static_cast<int>(valor)) // exibe o resultador
+    if (valor == static_cast<int>(valor)) // exibe o resultador dependendo do tipo
         cout << static_cast<int>(valor) << endl;
     else 
         cout << fixed << setprecision(2) << valor << endl;
@@ -138,7 +134,7 @@ int main() {
     while (true) {
         cout << ">> ";
 
-        if (!getline(cin, entrada)) break;
+        getline(cin, entrada);
         if (entrada == ".") break; // para sair do loop
         if (entrada == "exibir") { // para mostrar a tabela de símbolos
             exibir_tabela();
@@ -150,7 +146,7 @@ int main() {
                                   tokens[1].tipo == Atrib && 
                                   tokens[2].tipo != Fim) { // verifica se é uma atribuição  
             
-            atribuirVariavel(tokens);
+            atribuirVariavel(tokens); 
         
         }
         else if (tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // para atribuições vazias
