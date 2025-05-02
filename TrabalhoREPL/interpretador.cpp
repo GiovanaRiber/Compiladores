@@ -99,7 +99,7 @@ int calcularExpressao(const vector<Token>& tokens) {
 
             if (op == '/' && valor == 0) {
                 cerr << "Erro: divisao por zero (" << resultado << "/" << t.valor << "=0)" << endl;
-                    return 0; 
+                return 0; 
             }
 
             switch (op) {
@@ -132,7 +132,9 @@ int main() {
         }
         vector<Token> tokens = criarToken(entrada);
 
-        if (tokens.size() >= 3 && tokens[0].tipo == Var && tokens[1].tipo == Atrib && tokens[2].tipo != Fim) { // verifica se é uma atribuição  
+        if (tokens.size() >= 3 && tokens[0].tipo == Var &&
+                                  tokens[1].tipo == Atrib && 
+                                  tokens[2].tipo != Fim) { // verifica se é uma atribuição  
         
             string var = tokens[0].valor;
             vector<Token> expressao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
