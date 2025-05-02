@@ -78,51 +78,42 @@ int calcularExpressao(const vector<Token>& tokens) {
 
         Token t = tokens[posicao++];
 
-        if (t.tipo == Num) { // caso seja um número
-            
-            int valor = stoi(t.valor);
-            switch (op) {
-                case '/': 
-                    if (valor == 0) {
-                        cerr << "Erro: divisao por zero (" << resultado << "/0)" << endl;
-                        return 0; 
-                    }
-                    resultado /= valor;
-                break;
-                case '*': resultado *= valor; break;
-                case '-': resultado -= valor; break;
-                case '+': resultado += valor; break;
-            }
-        }
-        else if (t.tipo == Var) { // caso seja uma variável
-            
-            if (!tabela_simbolos.count(t.valor)) {
-                cerr << "Variavel " << t.valor << " nao definida !" << endl;
-                exit(1);
+        if (t.tipo == Fim) break;
+
+        if (t.tipo == Num || t.tipo == Var) { // caso seja um número ou uma variável
+             
+            int valor;
+
+            if (t.tipo == Num) {
+
+                valor = stoi(t.valor);
+            } else {
+
+                if (!tabela_simbolos.count(t.valor)) {
+                    cerr << "Variavel " << t.valor << " nao definida !" << endl;
+                    exit(1);
+                }
+    
+                valor = tabela_simbolos[t.valor];
             }
 
-            int valor = tabela_simbolos[t.valor];
-            switch (op) {
-                case '/': 
-                if (valor == 0) {
-                    cerr << "Erro: divisao por zero (" << resultado << "/" << t.valor << "=0)" << endl;
+            if (op == '/' && valor == 0) {
+                cerr << "Erro: divisao por zero (" << resultado << "/" << t.valor << "=0)" << endl;
                     return 0; 
-                }
-                resultado /= valor;
-                break;
+            }
+
+            switch (op) {
+                case '/': resultado /= valor; break;
                 case '*': resultado *= valor; break;
                 case '-': resultado -= valor; break;
                 case '+': resultado += valor; break;
             }
         }
         else if (t.tipo == Op) { // caso seja um operador, armazena ele
+
             op = t.valor[0];
         }
-        else if (t.tipo == Fim) { // fim :) 
-            break;
-        }
     }
-
     return resultado;
 }
 
@@ -141,11 +132,11 @@ int main() {
         }
         vector<Token> tokens = criarToken(entrada);
 
-        if (tokens.size() > 4 && tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // verifica se é uma atribuição  
+        if (tokens.size() >= 3 && tokens[0].tipo == Var && tokens[1].tipo == Atrib && tokens[2].tipo != Fim) { // verifica se é uma atribuição  
         
             string var = tokens[0].valor;
-            vector<Token> expresao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
-            int valor = calcularExpressao(expresao);
+            vector<Token> expressao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
+            int valor = calcularExpressao(expressao);
             tabela_simbolos[var] = valor; // adiciona na tabela
             cout << valor << endl;        // exibe o resultador
         }
