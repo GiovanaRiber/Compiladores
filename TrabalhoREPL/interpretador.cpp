@@ -141,14 +141,20 @@ int main() {
         }
         vector<Token> tokens = criarToken(entrada);
 
-        if (tokens.size() > 2 && tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // verifica se é uma atribuição  
+        if (tokens.size() > 4 && tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // verifica se é uma atribuição  
         
             string var = tokens[0].valor;
             vector<Token> expresao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
             int valor = calcularExpressao(expresao);
             tabela_simbolos[var] = valor; // adiciona na tabela
             cout << valor << endl;        // exibe o resultador
-        } else {                          // caso seja uma expressão normal
+        }
+        else if (tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // para atribuições vazias
+
+            cerr << "Erro: atribuicao indefinida !" << endl;
+            continue;
+        }
+        else {                          // caso seja uma expressão normal
             cout << "" << calcularExpressao(tokens) << endl;
         }
     }
