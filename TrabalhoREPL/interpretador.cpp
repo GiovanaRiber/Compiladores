@@ -3,10 +3,11 @@
 #include <vector>
 #include <cctype>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
-unordered_map<string, int> tabela_simbolos;
+unordered_map<string, float> tabela_simbolos;
 
 enum tipoToken {Num, Var, Op, Atrib, Fim};
 
@@ -68,10 +69,10 @@ void exibir_tabela() {             // exibe todos os tokens
     }
 }
 
-int calcularExpressao(const vector<Token>& tokens) {
+float calcularExpressao(const vector<Token>& tokens) {
 
     char op = '+'; // operador inicial
-    int resultado = 0; // armazenar o resultado final
+    float resultado = 0; // armazenar o resultado final
     size_t posicao = 0; // posicao na lista de tokens
 
     while (posicao < tokens.size()) {
@@ -82,7 +83,7 @@ int calcularExpressao(const vector<Token>& tokens) {
 
         if (t.tipo == Num || t.tipo == Var) { // caso seja um número ou uma variável
              
-            int valor;
+            float valor;
 
             if (t.tipo == Num) {
 
@@ -117,6 +118,19 @@ int calcularExpressao(const vector<Token>& tokens) {
     return resultado;
 }
 
+void atribuirVariavel(const vector<Token>& tokens) {
+
+    string var = tokens[0].valor;
+    vector<Token> expressao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
+    float valor = calcularExpressao(expressao);
+    tabela_simbolos[var] = valor; // adiciona na tabela
+
+    if (valor == static_cast<int>(valor)) // exibe o resultador
+        cout << static_cast<int>(valor) << endl;
+    else 
+        cout << fixed << setprecision(2) << valor << endl;
+}
+
 int main() {
 
     string entrada;
@@ -135,12 +149,9 @@ int main() {
         if (tokens.size() >= 3 && tokens[0].tipo == Var &&
                                   tokens[1].tipo == Atrib && 
                                   tokens[2].tipo != Fim) { // verifica se é uma atribuição  
+            
+            atribuirVariavel(tokens);
         
-            string var = tokens[0].valor;
-            vector<Token> expressao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
-            int valor = calcularExpressao(expressao);
-            tabela_simbolos[var] = valor; // adiciona na tabela
-            cout << valor << endl;        // exibe o resultador
         }
         else if (tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // para atribuições vazias
 
@@ -148,7 +159,13 @@ int main() {
             continue;
         }
         else {                          // caso seja uma expressão normal
-            cout << "" << calcularExpressao(tokens) << endl;
+
+            float resultado = calcularExpressao(tokens);
+
+            if (resultado == static_cast<int>(resultado))
+                cout << static_cast<int>(resultado) << endl;
+            else
+                cout << fixed << setprecision(2) << resultado << endl;
         }
     }
     return 0;
