@@ -6,9 +6,7 @@
 #include <iomanip>
 
 using namespace std;
-
 unordered_map<string, float> tabela_simbolos;
-
 enum tipoToken {Num, Var, Op, Atrib, Fim};
 
 struct Token {
@@ -42,16 +40,13 @@ vector<Token> criarToken(const string& entrada) {
         }
         else if (entrada[i] == '+' || entrada[i] == '-' || 
                  entrada[i] == '/' || entrada[i] == '*') { // caso operadores
-
             tokens.push_back({Op, string(1, entrada[i++])});  
         }
         else if (entrada[i] == '=') { // caso atribuição
-
             tokens.push_back({Atrib, "="});
             i++;
         }
         else { 
-
             cerr << "Caractere invalido: " << entrada[i] << endl;
             exit(1);
         }
@@ -121,10 +116,10 @@ void atribuirVariavel(const vector<Token>& tokens) {
 
     tabela_simbolos[var] = valor; // adiciona na tabela
 
-    if (valor == static_cast<int>(valor)) // exibe o resultador dependendo do tipo
-        cout << static_cast<int>(valor) << endl;
+    if (valor == static_cast<int>(valor))           // exibe o resultador dependendo do tipo
+        cout << static_cast<int>(valor) << endl;    // para inteiro 
     else 
-        cout << fixed << setprecision(2) << valor << endl;
+        cout << fixed << setprecision(2) << valor << endl; // para float
 }
 
 int main() {
@@ -150,7 +145,6 @@ int main() {
         
         }
         else if (tokens[0].tipo == Var && tokens[1].tipo == Atrib) { // para atribuições vazias
-
             cerr << "Erro: atribuicao indefinida !" << endl;
             continue;
         }
@@ -159,9 +153,9 @@ int main() {
             float resultado = calcularExpressao(tokens);
 
             if (resultado == static_cast<int>(resultado))
-                cout << static_cast<int>(resultado) << endl;
+                cout << static_cast<int>(resultado) << endl;    // para inteiro
             else
-                cout << fixed << setprecision(2) << resultado << endl;
+                cout << fixed << setprecision(2) << resultado << endl; // para float
         }
     }
     return 0;
