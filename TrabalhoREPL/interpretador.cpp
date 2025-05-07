@@ -7,7 +7,7 @@
 
 using namespace std;
 unordered_map<string, float> tabela_simbolos;
-enum tipoToken {Num, Var, Op, Atrib, Fim};
+enum tipoToken {Num, Var, Op, Atrib, Fim, Div, Mult, Plus, Minus, Abrir, Fechar};
 
 struct Token {
     tipoToken tipo;
@@ -38,17 +38,22 @@ vector<Token> criarToken(const string& entrada) {
                 var += entrada[i++];
             tokens.push_back({Var, var}); 
         }
-        else if (entrada[i] == '+' || entrada[i] == '-' || 
-                 entrada[i] == '/' || entrada[i] == '*') { // caso operadores
-            tokens.push_back({Op, string(1, entrada[i++])});  
-        }
-        else if (entrada[i] == '=') { // caso atribuição
-            tokens.push_back({Atrib, "="});
-            i++;
-        }
-        else { 
-            cerr << "Caractere invalido: " << entrada[i] << endl;
-            exit(1);
+        else {
+
+            char c = entrada[i++];
+
+            switch (c) {
+                case '+': tokens.push_back({Plus, string(1, c)}); break;
+                case '-': tokens.push_back({Minus, string(1, c)}); break;
+                case '*': tokens.push_back({Mult, string(1, c)}); break;
+                case '/': tokens.push_back({Div, string(1, c)}); break;
+                case '=': tokens.push_back({Atrib, "="}); break;
+                case '(': tokens.push_back({Abrir, "("}); break;
+                case ')': tokens.push_back({Fechar, ")"}); break;
+                default:
+                    cerr << "Caractere invalido: " << entrada[i] << endl;
+                    exit(1);
+            }
         }
     }
     tokens.push_back({Fim, ""}); // adiciona token de fim
