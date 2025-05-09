@@ -41,7 +41,7 @@ vector<Token> criarToken(const string& entrada) {
         else {
             char c = entrada[i++];
 
-            switch (c) {
+            switch (c) { // reconhece os peradores
                 case '+': tokens.push_back({Plus, string(1, c)}); break;
                 case '-': tokens.push_back({Minus, string(1, c)}); break;
                 case '*': tokens.push_back({Mult, string(1, c)}); break;
@@ -74,7 +74,7 @@ void exibir_tabela() {             // exibe todos os tokens
 size_t posicao = 0;
 vector<Token> tokens;
 
-float expr();
+float expr();  //funçções recursivas
 float termo();
 float fator();
 
