@@ -39,7 +39,6 @@ vector<Token> criarToken(const string& entrada) {
             tokens.push_back({Var, var}); 
         }
         else {
-
             char c = entrada[i++];
 
             switch (c) {
@@ -51,7 +50,7 @@ vector<Token> criarToken(const string& entrada) {
                 case '(': tokens.push_back({Abrir, "("}); break;
                 case ')': tokens.push_back({Fechar, ")"}); break;
                 default:
-                    cerr << "Caractere invalido: " << entrada[i] << endl;
+                    cerr << "Caractere invalido: " << entrada[c] << endl;
                     exit(1);
             }
         }
@@ -61,56 +60,98 @@ vector<Token> criarToken(const string& entrada) {
 }
 
 void exibir_tabela() {             // exibe todos os tokens
+
+    if (tabela_simbolos.empty()) {
+        cout << "A tabela de simbolos esta vazia !" << endl;
+        return;
+    }
     cout << "Tabela de simbolos:\n";
     for (auto& par : tabela_simbolos) {
         cout << par.first << " = " << par.second << endl;
     }
 }
 
-float calcularExpressao(const vector<Token>& tokens) {
+size_t posicao = 0;
+vector<Token> tokens;
 
-    char op = '+'; // operador inicial
-    float resultado = 0; // armazenar o resultado final
-    size_t posicao = 0; // posicao na lista de tokens
+float expr();
+float termo();
+float fator();
 
-    while (posicao < tokens.size()) {
+float expr() {
 
-        Token t = tokens[posicao++];
+    float resultado = termo();
 
-        if (t.tipo == Fim) break;
+    while (tokens[posicao].tipo == Plus || tokens[posicao].tipo == Minus) {
 
-        if (t.tipo == Num || t.tipo == Var) { // caso seja um número ou uma variável
-             
-            float valor;
+        tipoToken op = tokens[posicao++].tipo;
+        float valor = termo();
 
-            if (t.tipo == Num)
-                valor = stoi(t.valor);
-            else {
+        if (op == Plus)
+            resultado += valor;
+        else 
+            resultado -= valor;
+    }
+    return resultado;
+}
 
-                if (!tabela_simbolos.count(t.valor)) {
-                    cerr << "Variavel " << t.valor << " nao definida !" << endl;
-                    exit(1);
-                }
-                valor = tabela_simbolos[t.valor];
-            }
+float termo() {
 
-            if (op == '/' && valor == 0) { // divisão por zero
-                cerr << "Erro: divisao por zero (" << resultado << "/" << t.valor << "=0)" << endl;
+    float resultado = fator();
+
+    while (tokens[posicao].tipo == Mult || tokens[posicao].tipo == Div) {
+
+        tipoToken op = tokens[posicao++].tipo;
+        float valor = fator();
+
+        if (op == Mult)
+            resultado *= valor;
+        else {
+            if (valor == 0) { // divisão por zero
+                cerr << "Erro: divisao por zero (" << resultado << "/" << tokens[posicao].valor << "=0)" << endl;
                 return 0; 
             }
-
-            switch (op) { // dependendo do operador
-                case '/': resultado /= valor; break;
-                case '*': resultado *= valor; break;
-                case '-': resultado -= valor; break;
-                case '+': resultado += valor; break;
-            }
-        }
-        else if (t.tipo == Op) { // caso seja um operador, armazena ele
-            op = t.valor[0];
+            resultado /= valor;
         }
     }
     return resultado;
+}
+
+float fator() {
+
+    Token t  = tokens[posicao++];
+
+    if (t.tipo == Num) {
+        return stoi(t.valor);
+
+    } else if (t.tipo == Var) {
+
+        if (!tabela_simbolos.count(t.valor)) {
+            cerr << "Variavel " << t.valor << " nao definida !" << endl;
+            exit(1);
+        }
+        return tabela_simbolos[t.valor];
+
+    } else if (t.tipo == Abrir) {
+
+        float valor = expr();
+        if (tokens[posicao].tipo != Fechar) {
+            cerr << "Erro: parenteses nao fechados !" << endl;
+            exit(1);
+        }
+        posicao++;
+        return valor;
+
+    } else {
+        cerr << "Erro: token inesperado !" << endl;
+        exit(1);
+    }
+}
+
+float calcularExpressao(const vector<Token>& tokensEntrada) {
+    tokens = tokensEntrada;
+    posicao = 0;
+    return expr();
 }
 
 void atribuirVariavel(const vector<Token>& tokens) {
@@ -118,7 +159,6 @@ void atribuirVariavel(const vector<Token>& tokens) {
     string var = tokens[0].valor;
     vector<Token> expressao(tokens.begin()+2, tokens.end()); // adiciona a espressão depois do =
     float valor = calcularExpressao(expressao);
-
     tabela_simbolos[var] = valor; // adiciona na tabela
 
     if (valor == static_cast<int>(valor))           // exibe o resultador dependendo do tipo
